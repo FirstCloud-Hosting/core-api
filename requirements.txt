@@ -1,0 +1,11 @@
+flask
+flask_restful
+flask_limiter
+email_validator
+itsdangerous
+configparser
+python-memcached
+peewee
+pymysql
+cryptography
+pycrypto

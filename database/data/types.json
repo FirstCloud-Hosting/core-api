@@ -1,0 +1,8 @@
+[
+{"name":"Manage","icon":"fa-key"},
+{"name":"Administration","icon":"fa-user-shield"},
+{"name":"Account","icon":"fa-user-circle"},
+{"name":"Services","icon":"fa-folder"},
+{"name":"Diagnostic","icon":"fa-tools"},
+{"name":"Build & Run","icon":"fa-server"}
+]

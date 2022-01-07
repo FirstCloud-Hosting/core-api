@@ -1,0 +1,9 @@
+[
+{"type":"Manage","name":"Groups","page":"core/groups","forAdmin":"0"},
+{"type":"Administration","name":"Languages","page":"core/languages","forAdmin":"1"},
+{"type":"Administration","name":"Modules","page":"core/modules","forAdmin":"1"},
+{"type":"Manage","name":"Users","page":"core/users","forAdmin":"0"},
+{"type":"Administration","name":"Update","page":"core/update","forAdmin":"1"},
+{"type":"Administration","name":"Configurations","page":"core/configurations","forAdmin":"1"},
+{"type":"Manage","name":"Organizations","page":"core/organizations","forAdmin":"0"}
+]
