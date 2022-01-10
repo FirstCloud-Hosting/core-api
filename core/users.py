@@ -1,25 +1,20 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
-"""Summary
+"""Users module
 """
 
-from common import *
-from flask import jsonify, make_response
 import hashlib
 from uuid import uuid4
+from flask import jsonify, make_response
+from common import *
 
 
 class UsersListAPI(Resource):
 
-    """Summary
-
-    Attributes:
-        reqparse (TYPE): Description
+    """List all users
     """
 
     def __init__(self):
-        """Summary
-        """
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument(
             'token', type=str, help='Token is required for authentication')
@@ -38,10 +33,10 @@ class UsersListAPI(Resource):
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/users')
     def get(self):
-        """Summary
+        """Get all users
 
         Returns:
-            TYPE: Description
+            dict: list of users
         """
         args = self.reqparse.parse_args()
 
@@ -61,10 +56,7 @@ class UsersListAPI(Resource):
         return jsonify({'status': 200, 'data': query})
 
     def post(self):
-        """Summary
-
-        Returns:
-            TYPE: Description
+        """Create an user
         """
         args = self.reqparse.parse_args()
 
@@ -199,15 +191,10 @@ class UsersListAPI(Resource):
 
 class UserAPI(Resource):
 
-    """Summary
-
-    Attributes:
-        reqparse (TYPE): Description
+    """Get an user
     """
 
     def __init__(self):
-        """Summary
-        """
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument(
             'token',
@@ -233,13 +220,13 @@ class UserAPI(Resource):
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/users')
     def get(self, user_id):
-        """Summary
+        """Get an user
 
         Args:
-            user_id (TYPE): Description
+            user_id (str): User ID (UUID format)
 
         Returns:
-            TYPE: Description
+            dict: User informations
         """
         args = self.reqparse.parse_args()
 
@@ -257,13 +244,10 @@ class UserAPI(Resource):
 
     @utils.security.authentication_required
     def put(self, user_id):
-        """Summary
+        """Edit an user
 
         Args:
-            user_id (TYPE): Description
-
-        Returns:
-            TYPE: Description
+            user_id (str): User ID (UUID format)
         """
         args = self.reqparse.parse_args()
 
@@ -334,13 +318,10 @@ class UserAPI(Resource):
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/users')
     def delete(self, user_id):
-        """Summary
+        """Delete an user
 
         Args:
-            user_id (TYPE): Description
-
-        Returns:
-            TYPE: Description
+            user_id (str): User ID (UUID format)
         """
         args = self.reqparse.parse_args()
 

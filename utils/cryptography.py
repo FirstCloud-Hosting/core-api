@@ -1,13 +1,12 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
-import utils.configuration
-
 import base64
 import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
 
+import utils.configuration
 
 def hash_password(password):
 

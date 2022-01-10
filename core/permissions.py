@@ -1,8 +1,6 @@
 #!flask/bin/python
 
 from common import *
-import json
-
 
 class PermissionsListsAPI(Resource):
     def __init__(self):

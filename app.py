@@ -1,6 +1,11 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
+import importlib
+import os
+import sys
+sys.dont_write_bytecode = True
+
 import core.users
 import core.appKeys
 import core.permissions
@@ -13,16 +18,6 @@ import core.languages
 import core.countries
 import core.configurations
 from common import *
-import importlib
-import os
-import sys
-sys.dont_write_bytecode = True
-
-# Import custom modules
-
-
-# Import core modules
-# API Publique
 
 for module in os.listdir(os.getcwd() + '/custom'):
     if module == '__init__.py' or module[-3:] != '.py':

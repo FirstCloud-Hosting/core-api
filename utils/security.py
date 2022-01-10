@@ -3,10 +3,6 @@
 
 import os
 import json
-
-import utils.configuration
-import database
-
 from itsdangerous import (
     TimedJSONWebSignatureSerializer as Serializer,
     BadSignature,
@@ -15,6 +11,8 @@ from flask import jsonify, make_response, request
 from playhouse.shortcuts import model_to_dict
 import email_validator
 
+import utils.configuration
+import database
 
 def validate_password(organization_id, password):
 

@@ -8,9 +8,9 @@ import datetime
 import os
 
 # core libs
-from .tables import *
 import utils.configuration
 import utils.cryptography
+from .tables import *
 
 
 def initialization(

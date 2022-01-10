@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # standard modules
+import sys
+import json
 from playhouse.shortcuts import model_to_dict
 from peewee import DoesNotExist
 from flask_restful import Api, Resource, reqparse
@@ -12,8 +14,6 @@ from itsdangerous import (
     TimedJSONWebSignatureSerializer as Serializer,
     BadSignature,
     SignatureExpired)
-import sys
-import json
 
 # Libs
 import utils.configuration
