@@ -14,7 +14,7 @@ class LanguagesListsAPI(Resource):
             help='Token is required for authentication')
         self.reqparse.add_argument('name', type=str, help='Language name')
         self.reqparse.add_argument('code', type=str, help='Language code')
-        super(LanguagesListsAPI, self).__init__()
+        super().__init__()
 
     def get(self):
 
@@ -56,7 +56,7 @@ class LanguagesAPI(Resource):
             help='Token is required for authentication')
         self.reqparse.add_argument('name', type=str, help='Language name')
         self.reqparse.add_argument('code', type=str, help='Language code')
-        super(LanguagesAPI, self).__init__()
+        super().__init__()
 
     def get(self, language_id):
 

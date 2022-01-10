@@ -14,7 +14,7 @@ class ConfigurationsAPI(Resource):
             help='Token is required for authentication')
         self.reqparse.add_argument(
             'value', type=str, help="Value for edit configuration")
-        super(ConfigurationsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/configurations')

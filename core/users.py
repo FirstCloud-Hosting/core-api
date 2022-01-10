@@ -28,7 +28,7 @@ class UsersListAPI(Resource):
             'organization_id',
             type=str,
             help="ID of the associated organization to user")
-        super(UsersListAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/users')
@@ -215,7 +215,7 @@ class UserAPI(Resource):
             'languageId',
             type=str,
             help="languageId for edit user")
-        super(UserAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/users')
@@ -369,7 +369,7 @@ class UserMfaAPI(Resource):
             type=str,
             required=True,
             help='Secret Key of Multi Factor Authentication')
-        super(UserMfaAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def put(self):
@@ -425,7 +425,7 @@ class UserPasswordAPI(Resource):
             help='Email address for edit user')
         self.reqparse.add_argument(
             'password', type=str, help='Password for edit user')
-        super(UserPasswordAPI, self).__init__()
+        super().__init__()
 
     def put(self):
         """Summary
@@ -508,7 +508,7 @@ class UserLostPasswordAPI(Resource):
             type=str,
             required=True,
             help='Email for lost account password')
-        super(UserLostPasswordAPI, self).__init__()
+        super().__init__()
 
     def post(self):
         """Summary
@@ -573,7 +573,7 @@ class UserConfirmSignUpAPI(Resource):
             type=str,
             required=True,
             help='Key for confirm your account')
-        super(UserConfirmSignUpAPI, self).__init__()
+        super().__init__()
 
     def post(self):
         """Summary
@@ -625,7 +625,7 @@ class UserStatusAPI(Resource):
             type=int,
             required=True,
             help='Status for edit user')
-        super(UserStatusAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/users')
@@ -683,7 +683,7 @@ class UsersCountAPI(Resource):
             type=str,
             required=True,
             help='Username for Authentication')
-        super(UsersCountAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/users')

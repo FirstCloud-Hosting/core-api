@@ -6,20 +6,20 @@ from common import *
 
 class ModulesListsAPI(Resource):
     def __init__(self):
-      self.reqparse = reqparse.RequestParser()
-      self.reqparse.add_argument(
-    'token',
-    type=str,
-    required=True,
-     help='Token is required for authentication')
-      self.reqparse.add_argument('name', type=str, help='Module name')
-      self.reqparse.add_argument('page', type=str, help='Module Resource')
-      self.reqparse.add_argument('type_id', type=str, help='Type ID')
-      self.reqparse.add_argument(
-    'forAdmin',
-    type=bool,
-     help='This module is reserved for admin ?')
-      super(ModulesListsAPI, self).__init__()
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'token',
+            type=str,
+            required=True,
+            help='Token is required for authentication')
+        self.reqparse.add_argument('name', type=str, help='Module name')
+        self.reqparse.add_argument('page', type=str, help='Module Resource')
+        self.reqparse.add_argument('type_id', type=str, help='Type ID')
+        self.reqparse.add_argument(
+            'forAdmin',
+            type=bool,
+            help='This module is reserved for admin ?')
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(['core/modules', 'core/groups'])
@@ -62,15 +62,15 @@ class ModulesListsAPI(Resource):
 
         if len(query) != 0:
 
-          query = (database.Permissions.select()
+            query = (database.Permissions.select()
               .join(database.Modules)
               .join(database.Types)
               .where(database.Modules.forAdmin == 0, database.Permissions.group_id == user.group_id))
 
-          query = [model_to_dict(item) for item in query]
-          data = json.dumps(query, cls=database.JSONEncoder)
+            query = [model_to_dict(item) for item in query]
+            data = json.dumps(query, cls=database.JSONEncoder)
 
-          return jsonify({'status': 200, 'data': query})
+            return jsonify({'status': 200, 'data': query})
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/modules')
@@ -80,20 +80,20 @@ class ModulesListsAPI(Resource):
         try:
             # get if module exist
             module = database.Modules.get(
-    database.Modules.page == args['page'])
+                database.Modules.page == args['page'])
 
             return {'status': 100, 'message': 'This module already exist'}
 
         except DoesNotExist:
             module = database.Modules.create(
-    type_id=args['type_id'],
-    name=args['name'],
-    page=args['page'],
-     forAdmin=args['forAdmin'])
+                type_id=args['type_id'],
+                name=args['name'],
+                page=args['page'],
+                forAdmin=args['forAdmin'])
 
             return jsonify({'status': 200,
-    'message': 'Module successfully added',
-     'id': module.id})
+                'message': 'Module successfully added',
+                'id': module.id})
 
 
 class ModuleAPI(Resource):
@@ -111,7 +111,7 @@ class ModuleAPI(Resource):
     'forAdmin',
     type=bool,
      help='This module is reserved for admin ?')
-        super(ModuleAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self, module_id):
@@ -197,7 +197,7 @@ class ModulePermissionsAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('token', type=str, required=True, help='Token is required for authentication')
-        super(ModulePermissionsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self, module_id):

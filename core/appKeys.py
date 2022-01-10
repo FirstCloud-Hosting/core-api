@@ -21,7 +21,7 @@ class AppKeysListsAPI(Resource):
             type=str,
             required=True,
             help='Token is required for authentication')
-        super(AppKeysListsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self):
@@ -82,7 +82,7 @@ class AppKeysAPI(Resource):
             'description',
             type=str,
             help='Description of your application')
-        super(AppKeysAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self, appKey_id):

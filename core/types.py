@@ -12,7 +12,7 @@ class ModulesTypesListAPI(Resource):
             type=str,
             required=True,
             help='Token is required for authentication')
-        super(ModulesTypesListAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self):

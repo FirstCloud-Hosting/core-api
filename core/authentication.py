@@ -29,7 +29,7 @@ class AuthenticateUserAPI(Resource):
             type=str,
             help='Password for Authentication')
         self.reqparse.add_argument('X-Forwarded-For', location='headers')
-        super(AuthenticateUserAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self):
@@ -147,7 +147,7 @@ class AuthenticateAppAPI(Resource):
             type=str,
             help='Secret Key for Authentication')
         self.reqparse.add_argument('X-Forwarded-For', location='headers')
-        super(AuthenticateAppAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     def get(self):

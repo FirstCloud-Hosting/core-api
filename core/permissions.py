@@ -14,7 +14,7 @@ class PermissionsListsAPI(Resource):
             'permissions',
             type=str,
             help='List of permissions')
-        super(PermissionsListsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/groups')

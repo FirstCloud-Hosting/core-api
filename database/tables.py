@@ -76,7 +76,7 @@ class Users(BaseModel):
 
     def save(self, *args, **kwargs):
         self.edited = datetime.datetime.now()
-        return super(Users, self).save(*args, **kwargs)
+        return super().__init__()
 
 
 class AppKeys(BaseModel):

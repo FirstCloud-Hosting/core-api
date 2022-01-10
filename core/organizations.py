@@ -12,7 +12,7 @@ class OrganizationsListsAPI(Resource):
             type=str,
             required=True,
             help='Token is required for authentication')
-        super(OrganizationsListsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/organizations')
@@ -39,7 +39,7 @@ class OrganizationsAPI(Resource):
             type=int,
             default=0,
             help='Token is required for authentication')
-        super(OrganizationsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/organizations')

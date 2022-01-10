@@ -12,7 +12,7 @@ class CountriesListsAPI(Resource):
     """
 
     def __init__(self):
-        super(CountriesListsAPI, self).__init__()
+        super().__init__()
 
     def get(self):
         """Get all countries
@@ -33,7 +33,7 @@ class CountriesAPI(Resource):
     """
 
     def __init__(self):
-        super(CountriesAPI, self).__init__()
+        super().__init__()
 
     def get(self, code):
         """Get name of selected country by country code

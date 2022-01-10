@@ -14,7 +14,7 @@ class GroupsListsAPI(Resource):
             help='Token is required for authentication')
         self.reqparse.add_argument('name', type=str, help='Group name')
         self.reqparse.add_argument('note', type=str, help='Note for the group')
-        super(GroupsListsAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/groups')
@@ -70,7 +70,7 @@ class GroupAPI(Resource):
             help='Token is required for authentication')
         self.reqparse.add_argument('name', type=str, help='Group name')
         self.reqparse.add_argument('note', type=str, help='Note for the group')
-        super(GroupAPI, self).__init__()
+        super().__init__()
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/groups')
