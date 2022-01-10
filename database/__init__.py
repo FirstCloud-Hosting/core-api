@@ -1,21 +1,28 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
+# standard modules
+import json
+from uuid import UUID
+import datetime
+import os
+
 # core libs
 from .tables import *
 import utils.configuration
 import utils.cryptography
 
-# required lib
-import json
-from uuid import UUID
-from datetime import datetime
-import os
 
-
-def initialization(database_module, user, passwd, db, host='localhost', port=3306):
+def initialization(
+        database_module,
+        user,
+        passwd,
+        db,
+        host='localhost',
+        port=3306):
     try:
-        DB.init(db, user=user, passwd=passwd, host=host, port=port, charset="utf8")  # Actually init the database
+        DB.init(db, user=user, passwd=passwd, host=host, port=port,
+                charset="utf8")  # Actually init the database
         DB.connect()
         return True
     except OperationalError as error:
@@ -47,7 +54,9 @@ def make_tables():
     with open('%s/data/languages.json' % (os.path.split(__file__)[0], ), 'r') as f:
         languages = json.load(f)
         for language in languages:
-            Languages.get_or_create(name=language['name'], code=language['code'])
+            Languages.get_or_create(
+                name=language['name'],
+                code=language['code'])
 
     # import countries list
     with open('%s/data/countries.json' % (os.path.split(__file__)[0], ), 'r') as f:
@@ -89,12 +98,13 @@ def make_tables():
         language_id = Languages.get(Languages.name == "English")
 
         # create first user
-        Users.create(organization_id=organization_id,
-                     group_id=group_id,
-                     password=utils.cryptography.hash_password("Administrator"),
-                     email="administrator@linufy",
-                     language_id=language_id,
-                     status=1)
+        Users.create(
+            organization_id=organization_id,
+            group_id=group_id,
+            password=utils.cryptography.hash_password("Administrator"),
+            email="administrator@linufy",
+            language_id=language_id,
+            status=1)
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -102,7 +112,7 @@ class JSONEncoder(json.JSONEncoder):
         if isinstance(obj, UUID):
             # if the obj is uuid, we simply return the value of string
             return str(obj)
-        elif isinstance(obj, datetime):
+        elif isinstance(obj, datetime.datetime):
             # if the obj is datetime, we simply return the value of string
             return str(obj)
         return json.JSONEncoder.default(self, obj)

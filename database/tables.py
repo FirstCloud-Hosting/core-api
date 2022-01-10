@@ -1,9 +1,10 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
-from peewee import *
 import uuid
 import datetime
+
+from peewee import *
 
 DB = MySQLDatabase(None)  # Create a blank database here
 

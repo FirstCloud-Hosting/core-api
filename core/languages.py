@@ -3,43 +3,57 @@
 
 from common import *
 
+
 class LanguagesListsAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('token', type=str, required=True, help='Token is required for authentication')
+        self.reqparse.add_argument(
+            'token',
+            type=str,
+            required=True,
+            help='Token is required for authentication')
         self.reqparse.add_argument('name', type=str, help='Language name')
         self.reqparse.add_argument('code', type=str, help='Language code')
         super(LanguagesListsAPI, self).__init__()
 
     def get(self):
 
-        #Get all countries
+        # Get all countries
         query = database.Languages.select().order_by(database.Languages.name)
         query = [model_to_dict(item) for item in query]
         data = json.dumps(query, cls=database.JSONEncoder)
-        return jsonify({'status' : 200,  'data' : query})
+        return jsonify({'status': 200, 'data': query})
 
     def post(self):
-      args = self.reqparse.parse_args()
+        args = self.reqparse.parse_args()
 
-      if args['name'] == '' or args['code'] == '':
-        return {'status' : 100, 'message' : 'Cannot create language'}
+        if args['name'] == '' or args['code'] == '':
+            return {'status': 100, 'message': 'Cannot create language'}
 
-      try:
-        #get if language exist
-        module = database.Languages.get(database.Languages.code == args['code'])
+        try:
+            # get if language exist
+            module = database.Languages.get(
+                database.Languages.code == args['code'])
 
-        return {'status' : 100, 'message' : 'This language already exist'}
+            return {'status': 100, 'message': 'This language already exist'}
 
-      except DoesNotExist:
-        language = database.Languages.create(name=args['name'], code=args['code'])
+        except DoesNotExist:
+            language = database.Languages.create(
+                name=args['name'], code=args['code'])
 
-        return jsonify({'status' : 200,  'message' : 'Language successfully added', 'id' : language.id})
+            return jsonify({'status': 200,
+                            'message': 'Language successfully added',
+                            'id': language.id})
+
 
 class LanguagesAPI(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('token', type=str, required=True, help='Token is required for authentication')
+        self.reqparse.add_argument(
+            'token',
+            type=str,
+            required=True,
+            help='Token is required for authentication')
         self.reqparse.add_argument('name', type=str, help='Language name')
         self.reqparse.add_argument('code', type=str, help='Language code')
         super(LanguagesAPI, self).__init__()
@@ -47,14 +61,15 @@ class LanguagesAPI(Resource):
     def get(self, language_id):
 
         try:
-            #Get one country
-            query = database.Languages.get(database.Languages.id == language_id)
-            return jsonify({'status' : 200,  'data' : model_to_dict(query)})
+            # Get one country
+            query = database.Languages.get(
+                database.Languages.id == language_id)
+            return jsonify({'status': 200, 'data': model_to_dict(query)})
 
         except DoesNotExist:
             response = make_response(
                 jsonify(
-                    {'status' : 100, 'message' : 'Languages not found'}
+                    {'status': 100, 'message': 'Languages not found'}
                 ),
                 404,
             )
@@ -66,22 +81,25 @@ class LanguagesAPI(Resource):
         args = self.reqparse.parse_args()
 
         if args['name'] == '' or args['code'] == '':
-          return {'status' : 100, 'message' : 'Cannot edit language'}
+            return {'status': 100, 'message': 'Cannot edit language'}
 
-        #update language
-        query = database.Languages.update(name=args['name'], code=args['code']).where(database.Languages.id == language_id)
+        # update language
+        query = database.Languages.update(
+            name=args['name'], code=args['code']).where(
+            database.Languages.id == language_id)
         query.execute()
-        return {'status' : 200, 'message' : 'Language successfully edited'}
+        return {'status': 200, 'message': 'Language successfully edited'}
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/languages')
     def delete(self, language_id):
         args = self.reqparse.parse_args()
-        
-        #delete module
+
+        # delete module
         query = database.Languages.delete().where(database.Languages.id == language_id)
         query.execute()
-        return {'status' : 200,  'message' : 'Language successfully deleted'}
+        return {'status': 200, 'message': 'Language successfully deleted'}
+
 
 api.add_resource(LanguagesListsAPI, '/1.0/languages')
 api.add_resource(LanguagesAPI, '/1.0/languages/<string:language_id>')

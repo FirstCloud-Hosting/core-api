@@ -1,16 +1,19 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import json
+
 import utils.configuration
 import database
 
-from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from itsdangerous import (
+    TimedJSONWebSignatureSerializer as Serializer,
+    BadSignature,
+    SignatureExpired)
 from flask import jsonify, make_response, request
-import inspect
 from playhouse.shortcuts import model_to_dict
 import email_validator
-import os
-import json
 
 
 def validate_password(organization_id, password):
@@ -18,13 +21,14 @@ def validate_password(organization_id, password):
     if organization_id is not None:
 
         # get organization informations
-        query = database.Organizations.get(database.Organizations.id == organization_id)
+        query = database.Organizations.get(
+            database.Organizations.id == organization_id)
 
     if organization_id is not None and query.passwordHardening == 1:
 
         uppercase = 'ABCDEFGHIJKLMNOPQRSTUVXYZ'
         lowercase = 'abcdefghijklmnopqrstuvxyz'
-        specialChars = '[@_!#$%^&*()<>?/\|}{~:]'
+        specialChars = '[@_!#$%^&*()<>?/\\|}{~:]'
         numbers = '0123456789'
 
         if len(password) < 12:
@@ -57,7 +61,7 @@ def validate_email(email):
     # check if syntax is valid
     try:
         email_validator.validate_email(email)
-    except:
+    except BaseException:
         return False
 
     # check if domain is in blacklist
@@ -73,7 +77,7 @@ def validate_email(email):
 
         if query:
             return query.id
-    except:
+    except BaseException:
         pass
     return True
 
@@ -82,12 +86,12 @@ def get_user_id(token):
 
     configuration = utils.configuration.load()
 
-    s = Serializer(configuration['DEFAULT']['SECRET_KEY'])
+    serializer = Serializer(configuration['DEFAULT']['SECRET_KEY'])
 
     try:
-        data = s.loads(token)
+        data = serializer.loads(token)
         return data['id']
-    except:
+    except BaseException:
         return False
 
 
@@ -101,7 +105,7 @@ def authentication_required(func):
 
         configuration = utils.configuration.load()
 
-        s = Serializer(configuration['DEFAULT']['SECRET_KEY'])
+        serializer = Serializer(configuration['DEFAULT']['SECRET_KEY'])
 
         try:
 
@@ -115,7 +119,7 @@ def authentication_required(func):
                 )
                 return response
             else:
-                data = s.loads(parameters['token'])
+                data = serializer.loads(parameters['token'])
 
         # valid token, but expired
         except SignatureExpired:
@@ -156,12 +160,14 @@ def allowed_permissions(module):
 
             if isinstance(module, str):
 
-                query = (database.Permissions.select()
-                    .join(database.Modules)
-                    .switch(database.Permissions)
-                    .join(database.Groups)
-                    .join(database.Users)
-                    .where(database.Users.id == userId, database.Modules.page == module))
+                query = (
+                    database.Permissions.select() .join(
+                        database.Modules) .switch(
+                        database.Permissions) .join(
+                        database.Groups) .join(
+                        database.Users) .where(
+                        database.Users.id == userId,
+                        database.Modules.page == module))
 
                 if len(query) != 0:
 
@@ -208,12 +214,14 @@ def allowed_permissions(module):
 
                 for m in module:
 
-                    query = (database.Permissions.select()
-                            .join(database.Modules)
-                            .switch(database.Permissions)
-                            .join(database.Groups)
-                            .join(database.Users)
-                            .where(database.Users.id == userId, database.Modules.page == m))
+                    query = (
+                        database.Permissions.select() .join(
+                            database.Modules) .switch(
+                            database.Permissions) .join(
+                            database.Groups) .join(
+                            database.Users) .where(
+                            database.Users.id == userId,
+                            database.Modules.page == m))
 
                     if len(query) != 0:
 
@@ -240,11 +248,11 @@ def allowed_permissions(module):
                             return func(*args, **kwargs)
 
                 response = make_response(
-                        jsonify(
-                            {'status': 100, 'message': 'Permissions denied'}
-                        ),
-                        403,
-                    )
+                    jsonify(
+                        {'status': 100, 'message': 'Permissions denied'}
+                    ),
+                    403,
+                )
                 return response
 
         return wrapper

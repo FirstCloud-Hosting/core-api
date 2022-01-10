@@ -1,28 +1,28 @@
 #!flask/bin/python
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
+import core.users
+import core.appKeys
+import core.permissions
+import core.groups
+import core.modules
+import core.types
+import core.organizations
+import core.authentication
+import core.languages
+import core.countries
+import core.configurations
+from common import *
+import importlib
+import os
 import sys
 sys.dont_write_bytecode = True
 
-from common import *
+# Import custom modules
 
-#Import core modules
-import core.configurations
-import core.countries
-import core.languages
-import core.authentication
-import core.organizations
-import core.types
-import core.modules
-import core.groups
-import core.permissions
-import core.appKeys
-import core.users
-#API Publique
 
-#Import custom modules
-import os
-import importlib
+# Import core modules
+# API Publique
 
 for module in os.listdir(os.getcwd() + '/custom'):
     if module == '__init__.py' or module[-3:] != '.py':
@@ -30,12 +30,12 @@ for module in os.listdir(os.getcwd() + '/custom'):
     handle = importlib.import_module('custom.' + module[:-3])
     try:
         handle.register_database()
-    except:
+    except BaseException:
         pass
 
     try:
         handle.register_endpoint()
-    except:
+    except BaseException:
         pass
 
 if __name__ == '__main__':
