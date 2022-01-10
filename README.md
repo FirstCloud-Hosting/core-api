@@ -1,5 +1,10 @@
 # Core-API
 
+![pylint Score](https://github.com/FirstCloud-Hosting/core-api/actions/workflows/pylint.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/FirstCloud-Hosting/core-api/badge.svg?branch=main)](https://coveralls.io/github/FirstCloud-Hosting/core-api?branch=main)
+![Docker Image](https://github.com/FirstCloud-Hosting/core-api/actions/workflows/docker-image.yml/badge.svg)
+![CodeQL Status](https://github.com/FirstCloud-Hosting/core-api/actions/workflows/codeql-analysis.yml/badge.svg)
+
 This is core API used for more applications created by FirstCloud-Hosting team.
 
 ## Fundamental basis
