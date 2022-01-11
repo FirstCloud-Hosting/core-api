@@ -11,9 +11,6 @@ class CountriesListsAPI(Resource):
     """List all countries
     """
 
-    def __init__(self):
-        super().__init__()
-
     def get(self):
         """Get all countries
 
@@ -30,9 +27,6 @@ class CountriesAPI(Resource):
 
     """Manipulate selected country
     """
-
-    def __init__(self):
-        super().__init__()
 
     def get(self, code):
         """Get name of selected country by country code

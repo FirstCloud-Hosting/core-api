@@ -54,7 +54,7 @@ class AuthenticateUserAPI(Resource):
             remote_ip = utils.security.get_ip()
 
         # get hash of password
-        hash = utils.cryptography.hash_password(args['password'])
+        hash_passwd = utils.cryptography.hash_password(args['password'])
 
         try:
             # authentication by email
@@ -69,7 +69,7 @@ class AuthenticateUserAPI(Resource):
 
             user = database.Users.get(
                 database.Users.email == args['email'],
-                database.Users.password == hash)
+                database.Users.password == hash_passwd)
 
             if user:
                 # create session
@@ -94,14 +94,13 @@ class AuthenticateUserAPI(Resource):
                             'expiration': int(
                                 config['DEFAULT']['SESSION_LIFETIME'])}})
 
-            else:
-                response = make_response(
-                    jsonify(
-                        {'status': 100, 'message': 'Authentication failure'}
-                    ),
-                    403,
-                )
-                return response
+            response = make_response(
+                jsonify(
+                    {'status': 100, 'message': 'Authentication failure'}
+                ),
+                403,
+            )
+            return response
 
         except DoesNotExist:
 
@@ -172,7 +171,7 @@ class AuthenticateAppAPI(Resource):
         if args['X-Forwarded-For'] is not None:
             remote_ip = args['X-Forwarded-For']
         else:
-            remote_ip = get_ip()
+            remote_ip = utils.security.get_ip()
 
         try:
             # get user
@@ -205,14 +204,13 @@ class AuthenticateAppAPI(Resource):
                             'expiration': int(
                                 config['DEFAULT']['SESSION_LIFETIME'])}})
 
-            else:
-                response = make_response(
-                    jsonify(
-                        {'status': 100, 'message': 'Application authentication failure'}
-                    ),
-                    403,
-                )
-                return response
+            response = make_response(
+                jsonify(
+                    {'status': 100, 'message': 'Application authentication failure'}
+                ),
+                403,
+            )
+            return response
 
         except DoesNotExist:
 

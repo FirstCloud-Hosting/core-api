@@ -37,14 +37,13 @@ class PermissionsListsAPI(Resource):
             query = [model_to_dict(item) for item in query]
             return jsonify({'status': 200, 'data': query})
 
-        else:
-            response = make_response(
-                jsonify(
-                    {'status': 100, 'message': 'You can not get this group'}
-                ),
-                403,
-            )
-            return response
+        response = make_response(
+            jsonify(
+                {'status': 100, 'message': 'You can not get this group'}
+            ),
+            403,
+        )
+        return response
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/groups')

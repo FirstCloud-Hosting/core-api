@@ -68,8 +68,8 @@ def make_tables():
     with open('%s/data/modules.json' % (os.path.split(__file__)[0], ), 'r', encoding='utf-8') as modules_file:
         modules = json.load(modules_file)
         for module in modules:
-            type = Types.get(Types.name == module['type'])
-            Modules.get_or_create(type_id=type,
+            module_type = Types.get(Types.name == module['type'])
+            Modules.get_or_create(type_id=module_type,
                                   name=module['name'],
                                   page=module['page'],
                                   forAdmin=module['forAdmin'])

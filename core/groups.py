@@ -101,12 +101,10 @@ class GroupAPI(Resource):
                     database.Groups.organization_id == user.organization_id)
                 return jsonify({'status': 200, 'data': model_to_dict(query)})
 
-            else:
-
-                query = database.Groups.get(
-                    database.Groups.id == user.group_id,
-                    database.Groups.organization_id == user.organization_id)
-                return jsonify({'status': 200, 'data': model_to_dict(query)})
+            query = database.Groups.get(
+                database.Groups.id == user.group_id,
+                database.Groups.organization_id == user.organization_id)
+            return jsonify({'status': 200, 'data': model_to_dict(query)})
 
         except BaseException:
             response = make_response(

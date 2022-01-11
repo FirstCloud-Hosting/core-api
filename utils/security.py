@@ -191,14 +191,13 @@ def allowed_permissions(module):
                     )
                     return response
 
-                else:
-                    response = make_response(
-                        jsonify(
-                            {'status': 100, 'message': 'Permissions denied'}
-                        ),
-                        403,
-                    )
-                    return response
+                response = make_response(
+                    jsonify(
+                        {'status': 100, 'message': 'Permissions denied'}
+                    ),
+                    403,
+                )
+                return response
 
             else:
 

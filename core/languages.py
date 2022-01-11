@@ -45,6 +45,8 @@ class LanguagesListsAPI(Resource):
                             'message': 'Language successfully added',
                             'id': language.id})
 
+        return {'status': 100, 'message': 'Cannot create language'}
+
 
 class LanguagesAPI(Resource):
     def __init__(self):

@@ -69,6 +69,8 @@ class ModulesListsAPI(Resource):
 
             return jsonify({'status': 200, 'data': query})
 
+        return None
+
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/modules')
     def post(self):
@@ -140,7 +142,7 @@ class ModuleAPI(Resource):
             query = database.Modules.get(database.Modules.id == module_id)
             return jsonify({'status' : 200,  'data' : model_to_dict(query)})
 
-        except:
+        except BaseException:
             response = make_response(
                 jsonify(
                     {'status' : 100, 'message' : 'You can not get this module'}
@@ -165,8 +167,6 @@ class ModuleAPI(Resource):
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/modules')
     def delete(self, module_id):
-        args = self.reqparse.parse_args()
-
         # delete permissions for module
         query = database.Permissions.delete().where(database.Permissions.module_id == module_id)
         query.execute()

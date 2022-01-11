@@ -22,7 +22,7 @@ def hash_password(password):
     return hashlib.sha256(argon_hash).hexdigest()
 
 
-class AESCipher(object):
+class AESCipher():
 
     def __init__(self, key):
         self.block_size = 64

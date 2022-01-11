@@ -539,6 +539,8 @@ class UserLostPasswordAPI(Resource):
 
             return {'status': 200, 'data': 'Successfully sent'}
 
+        return {'status': 100, 'message': 'Invalid email address'}
+
 
 class UserConfirmSignUpAPI(Resource):
 
