@@ -1,13 +1,13 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
-import utils.configuration
-
 import base64
 import hashlib
+from argon2 import PasswordHasher
 from Crypto import Random
 from Crypto.Cipher import AES
 
+import utils.configuration
 
 def hash_password(password):
 
@@ -16,13 +16,16 @@ def hash_password(password):
     password = password.encode('utf-8')
     salt = (configuration['DEFAULT']['SECRET_KEY']).encode('utf-8')
 
-    return hashlib.sha256(password + salt).hexdigest()
+    ph = PasswordHasher()
+    argon_hash = ph.hash(password + salt)
+
+    return hashlib.sha256(argon_hash).hexdigest()
 
 
-class AESCipher(object):
+class AESCipher():
 
     def __init__(self, key):
-        self.bs = 64
+        self.block_size = 64
         self.key = hashlib.sha256(key.encode()).digest()
 
     def encrypt(self, raw):
@@ -35,11 +38,13 @@ class AESCipher(object):
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
+        return self._unpad(cipher.decrypt(
+            enc[AES.block_size:])).decode('utf-8')
 
     def _pad(self, s):
-        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
+        return s + (self.block_size - len(s) % self.block_size) * \
+            chr(self.block_size - len(s) % self.block_size)
 
     @staticmethod
     def _unpad(s):
-        return s[:-ord(s[len(s)-1:])]
+        return s[:-ord(s[len(s) - 1:])]

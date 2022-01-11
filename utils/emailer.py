@@ -9,16 +9,27 @@ from string import Template
 
 class emailer():
 
-    def __init__(self, server_host, server_port, username, password, tls=False, app_url="linufy.app"):
+    def __init__(
+            self,
+            server_host,
+            server_port,
+            username,
+            password,
+            tls=False,
+            app_url="linufy.app"):
         self.server_host = server_host
         self.server_port = server_port
         self.username = username
         self.password = password
         self.tls = tls
         self.app_url = app_url
+        self.connection = None
 
     def connect(self):
-        self.connection = smtplib.SMTP(host=str(self.server_host), port=int(self.server_port))
+        self.connection = smtplib.SMTP(
+            host=str(
+                self.server_host), port=int(
+                self.server_port))
         if self.tls.lower() == "true":
             self.connection.starttls()
         self.connection.ehlo()
@@ -36,7 +47,12 @@ class emailer():
             template_file_content = template_file.read()
         return Template(template_file_content)
 
-    def sendLostPassword(self, src_address, dst_address, title, lostPasswordKey):
+    def send_lost_password(
+            self,
+            src_address,
+            dst_address,
+            title,
+            lostPasswordKey):
         msg = MIMEMultipart()
         msg['From'] = src_address
         msg['To'] = dst_address
@@ -44,7 +60,8 @@ class emailer():
         msg['Date'] = formatdate(localtime=1)
         msg['Message-ID'] = make_msgid()
         message_template = self.read_template('lostPassword')
-        message = message_template.substitute(TITLE=title, KEY=lostPasswordKey, APP_URL=self.app_url)
+        message = message_template.substitute(
+            TITLE=title, KEY=lostPasswordKey, APP_URL=self.app_url)
         msg.attach(MIMEText(message, 'html', "utf-8"))
         plain = """Hello,
 
@@ -62,7 +79,12 @@ class emailer():
         self.disconnect()
         del msg
 
-    def sendConfirmSignUp(self, src_address, dst_address, title, confirmationKey):
+    def send_confirm_signup(
+            self,
+            src_address,
+            dst_address,
+            title,
+            confirmationKey):
         msg = MIMEMultipart()
         msg['From'] = src_address
         msg['To'] = dst_address
@@ -70,7 +92,11 @@ class emailer():
         msg['Date'] = formatdate(localtime=1)
         msg['Message-ID'] = make_msgid()
         message_template = self.read_template('confirmSignUp')
-        message = message_template.substitute(TITLE=title, EMAIL=dst_address, KEY=confirmationKey, APP_URL=self.app_url)
+        message = message_template.substitute(
+            TITLE=title,
+            EMAIL=dst_address,
+            KEY=confirmationKey,
+            APP_URL=self.app_url)
         msg.attach(MIMEText(message, 'html', "utf-8"))
         plain = """Hello,
 
@@ -87,7 +113,13 @@ class emailer():
         self.disconnect()
         del msg
 
-    def sendNewPassword(self, src_address, dst_address, title, username, newPassword):
+    def send_new_password(
+            self,
+            src_address,
+            dst_address,
+            title,
+            username,
+            newPassword):
         msg = MIMEMultipart()
         msg['From'] = src_address
         msg['To'] = dst_address
@@ -95,7 +127,12 @@ class emailer():
         msg['Date'] = formatdate(localtime=1)
         msg['Message-ID'] = make_msgid()
         message_template = self.read_template('newPassword')
-        message = message_template.substitute(TITLE=title, USERNAME=username, EMAIL=dst_address, PASSWORD=newPassword, APP_URL=self.app_url)
+        message = message_template.substitute(
+            TITLE=title,
+            USERNAME=username,
+            EMAIL=dst_address,
+            PASSWORD=newPassword,
+            APP_URL=self.app_url)
         msg.attach(MIMEText(message, 'html', "utf-8"))
         plain = """Dear %s,
 
@@ -105,30 +142,6 @@ class emailer():
         Sincerly,
         The FirstCloud-Hosting Team
         """ % (username, newPassword)
-        msg.attach(MIMEText(plain, 'plain'))
-        message = msg.as_string()
-        self.connect()
-        self.connection.sendmail(src_address, dst_address, message)
-        self.disconnect()
-        del msg
-
-    def sendWebinarSignUp(self, src_address, dst_address, title, firstname, link, date, time):
-        msg = MIMEMultipart()
-        msg['From'] = src_address
-        msg['To'] = dst_address
-        msg['Subject'] = title
-        msg['Date'] = formatdate(localtime=1)
-        msg['Message-ID'] = make_msgid()
-        message_template = self.read_template('webinarSignUp')
-        message = message_template.substitute(TITLE=title, FIRSTNAME=firstname, EMAIL=dst_address, LINK=link, DATE=date, TIME=time)
-        plain = """Dear %s,
-
-        You want to register to our webinar for LinuFy. Please use this link : %s the %s at %s
-        If you have any questions, please don't hesitate to reach use a support@linufy.app
-        Please do not reply to this email.
-        Sincerly,
-        The FirstCloud-Hosting Team
-        """ % (firstname, link, date, time)
         msg.attach(MIMEText(plain, 'plain'))
         message = msg.as_string()
         self.connect()

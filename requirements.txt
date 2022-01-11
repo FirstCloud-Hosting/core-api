@@ -9,3 +9,4 @@ peewee
 pymysql
 cryptography
 pycrypto
+argon2-cffi

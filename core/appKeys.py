@@ -1,80 +1,149 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
+"""app keys are API keys used for authenticate application to API
+"""
 
 from common import *
 
+
 class AppKeysListsAPI(Resource):
-  def __init__(self):
-    self.reqparse = reqparse.RequestParser()
-    self.reqparse.add_argument('token', type=str, required=True, help='Token is required for authentication')
-    super(AppKeysListsAPI, self).__init__()
 
-  @utils.security.authentication_required
-  def get(self):
-    args = self.reqparse.parse_args()
+    """List all app keys
 
-    #get current user ID
-    user_id = utils.security.get_user_id(args['token'])
+    Attributes:
+        token (str): Token used for validate user authentication
+    """
 
-    #Get all applications keys for user
-    query = (database.AppKeys.select()
-            .where(database.AppKeys.user_id  == user_id))
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'token',
+            type=str,
+            required=True,
+            help='Token is required for authentication')
+        super().__init__()
 
-    query = [model_to_dict(item) for item in query]
-    data = json.dumps(query, cls=database.JSONEncoder)
-    return jsonify({'status' : 200,  'data' : query})
+    @utils.security.authentication_required
+    def get(self):
+        """List app keys
 
-  @utils.security.authentication_required
-  def post(self):
-    args = self.reqparse.parse_args()
+        Returns:
+            dict: list of app keys
+        """
+        args = self.reqparse.parse_args()
 
-    #get current user ID
-    user_id = utils.security.get_user_id(args['token'])
+        # get current user ID
+        user_id = utils.security.get_user_id(args['token'])
 
-    group = database.AppKeys.create(user_id=user_id)
+        # Get all applications keys for user
+        query = (database.AppKeys.select()
+                 .where(database.AppKeys.user_id == user_id))
 
-    return jsonify({'status' : 200,  'message' : 'Application Key successfully added', 'id' : group.id})
+        query = [model_to_dict(item) for item in query]
+        return jsonify({'status': 200, 'data': query})
+
+    @utils.security.authentication_required
+    def post(self):
+        """Create app key
+
+        Returns:
+            id: ID of new app key (UUID format)
+        """
+        args = self.reqparse.parse_args()
+
+        # get current user ID
+        user_id = utils.security.get_user_id(args['token'])
+
+        app_key = database.AppKeys.create(user_id=user_id)
+
+        return jsonify({'status': 200,
+                        'message': 'Application Key successfully added',
+                        'id': app_key.id})
+
 
 class AppKeysAPI(Resource):
-  def __init__(self):
-    self.reqparse = reqparse.RequestParser()
-    self.reqparse.add_argument('token', type=str, required=True, help='Token is required for authentication')
-    self.reqparse.add_argument('description', type=str, help='Description of your application')
-    super(AppKeysAPI, self).__init__()
 
-  @utils.security.authentication_required
-  def get(self, appKey_id):
-    args = self.reqparse.parse_args()
+    """Selected app key
 
-    #get current user ID
-    user_id = utils.security.get_user_id(args['token'])
+    Attributes:
+        token (str): Token used for validate user authentication
+        description (str): Description of your app key
+    """
 
-    query = database.AppKeys.get(database.AppKeys.id == appKey_id, database.AppKeys.user_id == user_id)
-    return jsonify({'status' : 200,  'data' : model_to_dict(query)})
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument(
+            'token',
+            type=str,
+            required=True,
+            help='Token is required for authentication')
+        self.reqparse.add_argument(
+            'description',
+            type=str,
+            help='Description of your application')
+        super().__init__()
 
-  @utils.security.authentication_required
-  def put(self, appKey_id):
-    args = self.reqparse.parse_args()
+    @utils.security.authentication_required
+    def get(self, app_key_id):
+        """Get selected app key
 
-    #get current user ID
-    user_id = utils.security.get_user_id(args['token'])
+        Args:
+            app_key_id (str): app key ID (UUID format)
 
-    #update group
-    query = database.AppKeys.update(description=args['description']).where(database.AppKeys.id == appKey_id, database.AppKeys.user_id == user_id)
-    query.execute()
-    return {'status' : 200, 'message' : 'Application Key successfully edited'}
+        Returns:
+            dict: informations of selected app key
+        """
+        args = self.reqparse.parse_args()
 
-  @utils.security.authentication_required
-  def delete(self, appKey_id):
-    args = self.reqparse.parse_args()
+        # get current user ID
+        user_id = utils.security.get_user_id(args['token'])
 
-    #get current user ID
-    user_id = utils.security.get_user_id(args['token'])
+        query = database.AppKeys.get(
+            database.AppKeys.id == app_key_id,
+            database.AppKeys.user_id == user_id)
+        return jsonify({'status': 200, 'data': model_to_dict(query)})
 
-    #delete group
-    query = database.AppKeys.delete().where(database.AppKeys.id == appKey_id, database.AppKeys.user_id == user_id)
-    query.execute()
-    return {'status' : 200,  'message' : 'Application Key successfully deleted'}
+    @utils.security.authentication_required
+    def put(self, app_key_id):
+        """Edit selected app key
+
+        Args:
+            app_key_id (str): app key ID (UUID format)
+        """
+        args = self.reqparse.parse_args()
+
+        # get current user ID
+        user_id = utils.security.get_user_id(args['token'])
+
+        # update group
+        query = database.AppKeys.update(
+            description=args['description']).where(
+            database.AppKeys.id == app_key_id,
+            database.AppKeys.user_id == user_id)
+        query.execute()
+        return {'status': 200, 'message': 'Application Key successfully edited'}
+
+    @utils.security.authentication_required
+    def delete(self, app_key_id):
+        """Delete selected app key
+
+        Args:
+            app_key_id (str): app key ID (UUID format)
+        """
+        args = self.reqparse.parse_args()
+
+        # get current user ID
+        user_id = utils.security.get_user_id(args['token'])
+
+        # delete group
+        query = database.AppKeys.delete().where(
+            database.AppKeys.id == app_key_id,
+            database.AppKeys.user_id == user_id)
+        query.execute()
+        return {
+            'status': 200,
+            'message': 'Application Key successfully deleted'}
+
 
 api.add_resource(AppKeysListsAPI, '/1.0/appKeys')
-api.add_resource(AppKeysAPI, '/1.0/appKeys/<string:appKey_id>')
+api.add_resource(AppKeysAPI, '/1.0/appKeys/<string:app_key_id>')

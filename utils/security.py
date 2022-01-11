@@ -1,55 +1,55 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
-import utils.configuration
-import database
-
-from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
-from flask import jsonify, make_response, request
-import inspect
-from playhouse.shortcuts import model_to_dict
-import email_validator
 import os
 import json
+from itsdangerous import (
+    TimedJSONWebSignatureSerializer as Serializer,
+    BadSignature,
+    SignatureExpired)
+from flask import jsonify, make_response, request
+from playhouse.shortcuts import model_to_dict
+import email_validator
 
+import utils.configuration
+import database
 
 def validate_password(organization_id, password):
 
     if organization_id is not None:
 
         # get organization informations
-        query = database.Organizations.get(database.Organizations.id == organization_id)
+        query = database.Organizations.get(
+            database.Organizations.id == organization_id)
 
     if organization_id is not None and query.passwordHardening == 1:
 
         uppercase = 'ABCDEFGHIJKLMNOPQRSTUVXYZ'
         lowercase = 'abcdefghijklmnopqrstuvxyz'
-        specialChars = '[@_!#$%^&*()<>?/\|}{~:]'
+        special_chars = '[@_!#$%^&*()<>?/\\|}{~:]'
         numbers = '0123456789'
 
         if len(password) < 12:
             return False
 
-        elif not len([x for x in password if x in uppercase]) >= 1:
+        if not len([x for x in password if x in uppercase]) >= 1:
             return False
 
-        elif not len([x for x in password if x in lowercase]) >= 1:
+        if not len([x for x in password if x in lowercase]) >= 1:
             return False
 
-        elif not len([x for x in password if x in specialChars]) >= 1:
+        if not len([x for x in password if x in special_chars]) >= 1:
             return False
 
-        elif not len([x for x in password if x in numbers]) >= 1:
-            return False
-
-        return True
-
-    else:
-
-        if len(password) < 8:
+        if not len([x for x in password if x in numbers]) >= 1:
             return False
 
         return True
+
+    if len(password) < 8:
+        return False
+
+    return True
 
 
 def validate_email(email):
@@ -57,14 +57,14 @@ def validate_email(email):
     # check if syntax is valid
     try:
         email_validator.validate_email(email)
-    except:
+    except BaseException:
         return False
 
     # check if domain is in blacklist
-    with open('%s/../files/domains.json' % os.path.split(__file__)[0], 'r') as f:
-        bannedEmails = json.load(f)
+    with open('%s/../files/domains.json' % os.path.split(__file__)[0], 'r', encoding='utf-8') as domains_file:
+        banned_emails = json.load(domains_file)
         domain = email.split('@')[1].lower()
-        if domain in bannedEmails:
+        if domain in banned_emails:
             return False
 
     try:
@@ -73,7 +73,7 @@ def validate_email(email):
 
         if query:
             return query.id
-    except:
+    except BaseException:
         pass
     return True
 
@@ -82,12 +82,12 @@ def get_user_id(token):
 
     configuration = utils.configuration.load()
 
-    s = Serializer(configuration['DEFAULT']['SECRET_KEY'])
+    serializer = Serializer(configuration['DEFAULT']['SECRET_KEY'])
 
     try:
-        data = s.loads(token)
+        data = serializer.loads(token)
         return data['id']
-    except:
+    except BaseException:
         return False
 
 
@@ -98,10 +98,6 @@ def authentication_required(func):
         class_handler = args[0]
 
         parameters = class_handler.reqparse.parse_args()
-
-        configuration = utils.configuration.load()
-
-        s = Serializer(configuration['DEFAULT']['SECRET_KEY'])
 
         try:
 
@@ -114,8 +110,6 @@ def authentication_required(func):
                     400,
                 )
                 return response
-            else:
-                data = s.loads(parameters['token'])
 
         # valid token, but expired
         except SignatureExpired:
@@ -152,16 +146,18 @@ def allowed_permissions(module):
 
             parameters = class_handler.reqparse.parse_args()
 
-            userId = get_user_id(parameters['token'])
+            user_id = get_user_id(parameters['token'])
 
             if isinstance(module, str):
 
-                query = (database.Permissions.select()
-                    .join(database.Modules)
-                    .switch(database.Permissions)
-                    .join(database.Groups)
-                    .join(database.Users)
-                    .where(database.Users.id == userId, database.Modules.page == module))
+                query = (
+                    database.Permissions.select() .join(
+                        database.Modules) .switch(
+                        database.Permissions) .join(
+                        database.Groups) .join(
+                        database.Users) .where(
+                        database.Users.id == user_id,
+                        database.Modules.page == module))
 
                 if len(query) != 0:
 
@@ -180,22 +176,13 @@ def allowed_permissions(module):
 
                     if method == "get" and query[0].view == 1:
                         return func(*args, **kwargs)
-                    elif method == "post" and query[0].creation == 1:
+                    if method == "post" and query[0].creation == 1:
                         return func(*args, **kwargs)
-                    elif method == "put" and query[0].edition == 1:
+                    if method == "put" and query[0].edition == 1:
                         return func(*args, **kwargs)
-                    elif method == "delete" and query[0].deletion == 1:
+                    if method == "delete" and query[0].deletion == 1:
                         return func(*args, **kwargs)
-                    else:
-                        response = make_response(
-                            jsonify(
-                                {'status': 100, 'message': 'Permissions denied'}
-                            ),
-                            403,
-                        )
-                        return response
 
-                else:
                     response = make_response(
                         jsonify(
                             {'status': 100, 'message': 'Permissions denied'}
@@ -204,48 +191,56 @@ def allowed_permissions(module):
                     )
                     return response
 
-            else:
-
-                for m in module:
-
-                    query = (database.Permissions.select()
-                            .join(database.Modules)
-                            .switch(database.Permissions)
-                            .join(database.Groups)
-                            .join(database.Users)
-                            .where(database.Users.id == userId, database.Modules.page == m))
-
-                    if len(query) != 0:
-
-                        # get HTTP method
-                        method = func.__name__
-
-                        # check if HTTP method is valid
-                        if method not in ["get", "post", "put", "delete"]:
-                            response = make_response(
-                                jsonify(
-                                    {'status': 100, 'message': 'Method not allowed'}
-                                ),
-                                405,
-                            )
-                            return response
-
-                        if method == "get" and query[0].view == 1:
-                            return func(*args, **kwargs)
-                        elif method == "post" and query[0].creation == 1:
-                            return func(*args, **kwargs)
-                        elif method == "put" and query[0].edition == 1:
-                            return func(*args, **kwargs)
-                        elif method == "delete" and query[0].deletion == 1:
-                            return func(*args, **kwargs)
-
                 response = make_response(
-                        jsonify(
-                            {'status': 100, 'message': 'Permissions denied'}
-                        ),
-                        403,
-                    )
+                    jsonify(
+                        {'status': 100, 'message': 'Permissions denied'}
+                    ),
+                    403,
+                )
                 return response
+
+            for m in module:
+
+                query = (
+                    database.Permissions.select() .join(
+                        database.Modules) .switch(
+                        database.Permissions) .join(
+                        database.Groups) .join(
+                        database.Users) .where(
+                        database.Users.id == user_id,
+                        database.Modules.page == m))
+
+                if len(query) != 0:
+
+                    # get HTTP method
+                    method = func.__name__
+
+                    # check if HTTP method is valid
+                    if method not in ["get", "post", "put", "delete"]:
+                        response = make_response(
+                            jsonify(
+                                {'status': 100, 'message': 'Method not allowed'}
+                            ),
+                            405,
+                        )
+                        return response
+
+                    if method == "get" and query[0].view == 1:
+                        return func(*args, **kwargs)
+                    if method == "post" and query[0].creation == 1:
+                        return func(*args, **kwargs)
+                    if method == "put" and query[0].edition == 1:
+                        return func(*args, **kwargs)
+                    if method == "delete" and query[0].deletion == 1:
+                        return func(*args, **kwargs)
+
+            response = make_response(
+                jsonify(
+                    {'status': 100, 'message': 'Permissions denied'}
+                ),
+                403,
+            )
+            return response
 
         return wrapper
 

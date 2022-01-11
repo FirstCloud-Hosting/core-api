@@ -1,9 +1,10 @@
 #!flask/bin/python
 # -*- coding: utf-8 -*-
 
-from peewee import *
 import uuid
 import datetime
+
+from peewee import *
 
 DB = MySQLDatabase(None)  # Create a blank database here
 
@@ -73,9 +74,9 @@ class Users(BaseModel):
     created = DateTimeField(constraints=[SQL('DEFAULT CURRENT_TIMESTAMP')])
     edited = DateTimeField(null=True)
 
-    def save(self, *args, **kwargs):
+    def save(self):
         self.edited = datetime.datetime.now()
-        return super(Users, self).save(*args, **kwargs)
+        return super().__init__()
 
 
 class AppKeys(BaseModel):
