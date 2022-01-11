@@ -23,6 +23,7 @@ class emailer():
         self.password = password
         self.tls = tls
         self.app_url = app_url
+        self.connection = None
 
     def connect(self):
         self.connection = smtplib.SMTP(

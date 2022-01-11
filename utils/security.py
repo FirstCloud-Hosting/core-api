@@ -61,7 +61,7 @@ def validate_email(email):
         return False
 
     # check if domain is in blacklist
-    with open('%s/../files/domains.json' % os.path.split(__file__)[0], 'r') as domains_file:
+    with open('%s/../files/domains.json' % os.path.split(__file__)[0], 'r', encoding='utf-8') as domains_file:
         banned_emails = json.load(domains_file)
         domain = email.split('@')[1].lower()
         if domain in banned_emails:
@@ -199,50 +199,48 @@ def allowed_permissions(module):
                 )
                 return response
 
-            else:
+            for m in module:
 
-                for m in module:
+                query = (
+                    database.Permissions.select() .join(
+                        database.Modules) .switch(
+                        database.Permissions) .join(
+                        database.Groups) .join(
+                        database.Users) .where(
+                        database.Users.id == user_id,
+                        database.Modules.page == m))
 
-                    query = (
-                        database.Permissions.select() .join(
-                            database.Modules) .switch(
-                            database.Permissions) .join(
-                            database.Groups) .join(
-                            database.Users) .where(
-                            database.Users.id == user_id,
-                            database.Modules.page == m))
+                if len(query) != 0:
 
-                    if len(query) != 0:
+                    # get HTTP method
+                    method = func.__name__
 
-                        # get HTTP method
-                        method = func.__name__
+                    # check if HTTP method is valid
+                    if method not in ["get", "post", "put", "delete"]:
+                        response = make_response(
+                            jsonify(
+                                {'status': 100, 'message': 'Method not allowed'}
+                            ),
+                            405,
+                        )
+                        return response
 
-                        # check if HTTP method is valid
-                        if method not in ["get", "post", "put", "delete"]:
-                            response = make_response(
-                                jsonify(
-                                    {'status': 100, 'message': 'Method not allowed'}
-                                ),
-                                405,
-                            )
-                            return response
+                    if method == "get" and query[0].view == 1:
+                        return func(*args, **kwargs)
+                    if method == "post" and query[0].creation == 1:
+                        return func(*args, **kwargs)
+                    if method == "put" and query[0].edition == 1:
+                        return func(*args, **kwargs)
+                    if method == "delete" and query[0].deletion == 1:
+                        return func(*args, **kwargs)
 
-                        if method == "get" and query[0].view == 1:
-                            return func(*args, **kwargs)
-                        if method == "post" and query[0].creation == 1:
-                            return func(*args, **kwargs)
-                        if method == "put" and query[0].edition == 1:
-                            return func(*args, **kwargs)
-                        if method == "delete" and query[0].deletion == 1:
-                            return func(*args, **kwargs)
-
-                response = make_response(
-                    jsonify(
-                        {'status': 100, 'message': 'Permissions denied'}
-                    ),
-                    403,
-                )
-                return response
+            response = make_response(
+                jsonify(
+                    {'status': 100, 'message': 'Permissions denied'}
+                ),
+                403,
+            )
+            return response
 
         return wrapper
 

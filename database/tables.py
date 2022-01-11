@@ -74,7 +74,7 @@ class Users(BaseModel):
     created = DateTimeField(constraints=[SQL('DEFAULT CURRENT_TIMESTAMP')])
     edited = DateTimeField(null=True)
 
-    def save(self, *args, **kwargs):
+    def save(self):
         self.edited = datetime.datetime.now()
         return super().__init__()
 
