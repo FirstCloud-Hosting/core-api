@@ -534,7 +534,7 @@ class UserLostPasswordAPI(Resource):
                 database.Users.id == user.id)
             query.execute()
 
-            emailer.sendLostPassword(
+            emailer.send_lost_password(
                 'lost_password@linufy.app',
                 args['email'],
                 'FirstCloud-Hosting - Password Reset',
@@ -645,9 +645,6 @@ class UserStatusAPI(Resource):
 
         if not args['status'] in [0, 1]:
             return {'status': 100, 'message': 'Invalid status'}
-
-        # get current SQL user instance
-        user = database.Users.get(database.Users.id == current_user_id)
 
         try:
             query = database.Users.update(

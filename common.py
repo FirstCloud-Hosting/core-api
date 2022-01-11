@@ -34,7 +34,7 @@ if (config['DEFAULT']['MEMCACHED']).lower() == "true":
         config['MEMCACHED']['PORT'])
 else:
     cacheEnable = False
-    cache = utils.cacheMemcache.Cache(False)
+    cache = utils.cache_memcache.Cache(False)
 
 # connect to the database
 if database.initialization(

@@ -99,10 +99,6 @@ def authentication_required(func):
 
         parameters = class_handler.reqparse.parse_args()
 
-        configuration = utils.configuration.load()
-
-        serializer = Serializer(configuration['DEFAULT']['SECRET_KEY'])
-
         try:
 
             # check if token parameter is available

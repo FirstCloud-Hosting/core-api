@@ -66,7 +66,6 @@ class ModulesListsAPI(Resource):
               .where(database.Modules.forAdmin == 0, database.Permissions.group_id == user.group_id))
 
             query = [model_to_dict(item) for item in query]
-            data = json.dumps(query, cls=database.JSONEncoder)
 
             return jsonify({'status': 200, 'data': query})
 
@@ -157,9 +156,6 @@ class ModuleAPI(Resource):
     def put(self, module_id):
         args = self.reqparse.parse_args()
 
-        # get current user ID
-        user_id = utils.security.get_user_id(args['token'])
-
         if args['name'] == '' or args['page'] == '' or args['type_id'] == '' or args['forAdmin'] == '':
             return {'status' : 100, 'message' : 'Cannot edit module'}
 
@@ -172,9 +168,6 @@ class ModuleAPI(Resource):
     @utils.security.allowed_permissions('core/modules')
     def delete(self, module_id):
         args = self.reqparse.parse_args()
-
-        # get current user ID
-        user_id = utils.security.get_user_id(args['token'])
 
         # delete permissions for module
         query = database.Permissions.delete().where(database.Permissions.module_id == module_id)
