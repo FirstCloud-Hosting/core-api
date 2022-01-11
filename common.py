@@ -27,13 +27,13 @@ import database
 config = utils.configuration.load()
 
 if (config['DEFAULT']['MEMCACHED']).lower() == "true":
-    cacheEnable = True
+    CACHE_ENABLE = True
     cache = utils.cache_memcache.Cache(
         True,
         config['MEMCACHED']['HOST'],
         config['MEMCACHED']['PORT'])
 else:
-    cacheEnable = False
+    CACHE_ENABLE = False
     cache = utils.cache_memcache.Cache(False)
 
 # connect to the database
@@ -66,9 +66,9 @@ app.json_encoder = database.JSONEncoder
 api = Api(app)
 
 if config['DEFAULT']['ENVIRONMENT']:
-    environment = config['DEFAULT']['ENVIRONMENT']
+    ENVIRONMENT = config['DEFAULT']['ENVIRONMENT']
 else:
-    environment = "production"
+    ENVIRONMENT = "production"
 
 limiter = Limiter(
     app,

@@ -133,23 +133,21 @@ class ModuleAPI(Resource):
             query = database.Modules.get(database.Modules.id == module_id)
             return jsonify({'status' : 200,  'data' : model_to_dict(query)})
 
-        else:
+        try: 
+            # get permission
+            query = (database.Permissions.get(database.Permissions.group_id == user.group_id, database.Permissions.module_id == module_id))
 
-            try: 
-                # get permission
-                query = (database.Permissions.get(database.Permissions.group_id == user.group_id, database.Permissions.module_id == module_id))
+            query = database.Modules.get(database.Modules.id == module_id)
+            return jsonify({'status' : 200,  'data' : model_to_dict(query)})
 
-                query = database.Modules.get(database.Modules.id == module_id)
-                return jsonify({'status' : 200,  'data' : model_to_dict(query)})
-
-            except:
-                response = make_response(
-                    jsonify(
-                        {'status' : 100, 'message' : 'You can not get this module'}
-                    ),
-                    403,
-                )
-                return response
+        except:
+            response = make_response(
+                jsonify(
+                    {'status' : 100, 'message' : 'You can not get this module'}
+                ),
+                403,
+            )
+            return response
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/modules')
@@ -204,14 +202,13 @@ class ModulePermissionsAPI(Resource):
             query = database.Permissions.get(database.Permissions.module_id == module_id)
             return jsonify({'status' : 200,  'data' : model_to_dict(query)})
 
-        else:
-          response = make_response(
-              jsonify(
-                  {'status' : 100, 'message' : 'You can not get this module'}
-              ),
-              403,
-          )
-          return response
+        response = make_response(
+            jsonify(
+                {'status' : 100, 'message' : 'You can not get this module'}
+            ),
+            403,
+        )
+        return response
 
 api.add_resource(ModulesListsAPI, '/1.0/modules')
 api.add_resource(ModuleAPI, '/1.0/modules/<string:module_id>')

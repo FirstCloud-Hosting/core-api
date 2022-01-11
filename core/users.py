@@ -73,18 +73,18 @@ class UsersListAPI(Resource):
             user = database.Users.get(database.Users.id == user_id)
 
             if utils.security.validate_password(
-                    user.organization_id, args['password']) == False:
+                    user.organization_id, args['password']) is False:
                 return {'status': 100, 'message': 'Invalid password'}
 
         else:
 
             if utils.security.validate_password(
-                    None, args['password']) == False:
+                    None, args['password']) is False:
                 return {'status': 100, 'message': 'Invalid password'}
 
             user_id = None
 
-        if utils.security.validate_email(args['email']) != True:
+        if utils.security.validate_email(args['email']) is not True:
             return {'status': 100, 'message': 'Invalid email address'}
 
         if user_id is not None:
@@ -123,7 +123,7 @@ class UsersListAPI(Resource):
             # get organization_id by parameters or create new organization if
             # parameter is not defined
             if not args['organization_id']:
-                if environment == "demo":
+                if ENVIRONMENT == "demo":
                     organization_id = database.Organizations.create(
                         validity=str(config['DEFAULT']['DEMO_VALIDITY']))
                 else:
@@ -276,41 +276,40 @@ class UserAPI(Resource):
             return {'status': 200, 'message': 'User successfully updated'}
 
         # not current user
-        else:
 
-            # get permission
-            query = (
-                database.Permissions.select() .join(
-                    database.Modules) .switch(
-                    database.Permissions) .join(
-                    database.Groups) .join(
-                    database.Users) .where(
-                        database.Users.id == current_user_id,
-                    database.Modules.page == 'core/users'))
+        # get permission
+        query = (
+            database.Permissions.select() .join(
+                database.Modules) .switch(
+                database.Permissions) .join(
+                database.Groups) .join(
+                database.Users) .where(
+                    database.Users.id == current_user_id,
+                database.Modules.page == 'core/users'))
 
-            if len(query) == 0:
-                response = make_response(
-                    jsonify(
-                        {'status': 100, 'message': 'Permissions denied'}
-                    ),
-                    403,
-                )
-                return response
+        if len(query) == 0:
+            response = make_response(
+                jsonify(
+                    {'status': 100, 'message': 'Permissions denied'}
+                ),
+                403,
+            )
+            return response
 
-            if 'groupId' not in args:
-                return {'status': 100, 'message': 'groupId not set'}
+        if 'groupId' not in args:
+            return {'status': 100, 'message': 'groupId not set'}
 
-            if current_user_id == user_id:
-                return {
-                    'status': 100,
-                    'message': 'Unable to change group of current user'}
+        if current_user_id == user_id:
+            return {
+                'status': 100,
+                'message': 'Unable to change group of current user'}
 
-            query = database.Users.update(
-                email=args['email'],
-                group_id=args['groupId']).where(
-                database.Users.id == user_id)
-            query.execute()
-            return {'status': 200, 'message': 'User successfully updated'}
+        query = database.Users.update(
+            email=args['email'],
+            group_id=args['groupId']).where(
+            database.Users.id == user_id)
+        query.execute()
+        return {'status': 200, 'message': 'User successfully updated'}
 
     @utils.security.authentication_required
     @utils.security.allowed_permissions(module='core/users')
@@ -391,11 +390,9 @@ class UserMfaAPI(Resource):
                 'status': 200,
                 'message': 'Multi factor authentication has been successfully configured'}
 
-        else:
-            return {
-                'status': 100,
-                'message': 'Invalid status of multi factor authentication'}
-        return True
+        return {
+            'status': 100,
+            'message': 'Invalid status of multi factor authentication'}
 
 
 class UserPasswordAPI(Resource):
