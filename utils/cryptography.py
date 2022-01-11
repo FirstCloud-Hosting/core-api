@@ -3,6 +3,7 @@
 
 import base64
 import hashlib
+from argon2 import PasswordHasher
 from Crypto import Random
 from Crypto.Cipher import AES
 
@@ -15,7 +16,10 @@ def hash_password(password):
     password = password.encode('utf-8')
     salt = (configuration['DEFAULT']['SECRET_KEY']).encode('utf-8')
 
-    return hashlib.sha256(password + salt).hexdigest()
+    ph = PasswordHasher()
+    argon_hash = ph.hash(password + salt)
+
+    return hashlib.sha256(argon_hash).hexdigest()
 
 
 class AESCipher(object):
