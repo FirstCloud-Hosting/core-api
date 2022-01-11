@@ -176,20 +176,20 @@ def allowed_permissions(module):
 
                     if method == "get" and query[0].view == 1:
                         return func(*args, **kwargs)
-                    elif method == "post" and query[0].creation == 1:
+                    if method == "post" and query[0].creation == 1:
                         return func(*args, **kwargs)
-                    elif method == "put" and query[0].edition == 1:
+                    if method == "put" and query[0].edition == 1:
                         return func(*args, **kwargs)
-                    elif method == "delete" and query[0].deletion == 1:
+                    if method == "delete" and query[0].deletion == 1:
                         return func(*args, **kwargs)
-                    else:
-                        response = make_response(
-                            jsonify(
-                                {'status': 100, 'message': 'Permissions denied'}
-                            ),
-                            403,
-                        )
-                        return response
+
+                    response = make_response(
+                        jsonify(
+                            {'status': 100, 'message': 'Permissions denied'}
+                        ),
+                        403,
+                    )
+                    return response
 
                 else:
                     response = make_response(
@@ -230,11 +230,11 @@ def allowed_permissions(module):
 
                         if method == "get" and query[0].view == 1:
                             return func(*args, **kwargs)
-                        elif method == "post" and query[0].creation == 1:
+                        if method == "post" and query[0].creation == 1:
                             return func(*args, **kwargs)
-                        elif method == "put" and query[0].edition == 1:
+                        if method == "put" and query[0].edition == 1:
                             return func(*args, **kwargs)
-                        elif method == "delete" and query[0].deletion == 1:
+                        if method == "delete" and query[0].deletion == 1:
                             return func(*args, **kwargs)
 
                 response = make_response(

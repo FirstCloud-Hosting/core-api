@@ -591,10 +591,9 @@ class UserConfirmSignUpAPI(Resource):
             query.execute()
             return {'status': 200, 'data': 'User successfully actived'}
 
-        else:
-            return {
-                'status': 100,
-                'message': 'User yet active or confirm key is invalid'}
+        return {
+            'status': 100,
+            'message': 'User yet active or confirm key is invalid'}
 
 
 class UserStatusAPI(Resource):
