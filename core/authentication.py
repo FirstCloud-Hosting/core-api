@@ -82,7 +82,7 @@ class AuthenticateUserAPI(Resource):
                 database.ActivityLogs.create(
                     activity="Autentication",
                     result="%s - %s : Authentication success" %
-                    args['email'], remote_ip)
+                    (args['email'], remote_ip) )
 
                 return jsonify(
                     {
@@ -193,7 +193,7 @@ class AuthenticateAppAPI(Resource):
                 # log activity
                 database.ActivityLogs.create(
                     activity="Autentication", result="%s - %s - %s : Application authentication success" %
-                    (args['organizationKey'], args['secretKey'], remote_ip))
+                    (args['organizationKey'], args['secretKey'], remote_ip) )
 
                 return jsonify(
                     {

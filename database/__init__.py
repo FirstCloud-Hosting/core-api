@@ -17,11 +17,11 @@ def initialization(
         database_module,
         user,
         passwd,
-        db,
+        database,
         host='localhost',
         port=3306):
     try:
-        DB.init(db, user=user, passwd=passwd, host=host, port=port,
+        DB.init(database, user=user, passwd=passwd, host=host, port=port,
                 charset="utf8")  # Actually init the database
         DB.connect()
         return True
@@ -45,28 +45,28 @@ def make_tables():
                       ActivityLogs])
 
     # import types list
-    with open('%s/data/types.json' % (os.path.split(__file__)[0], ), 'r') as f:
-        types = json.load(f)
-        for type in types:
-            Types.get_or_create(name=type['name'], icon=type['icon'])
+    with open('%s/data/types.json' % (os.path.split(__file__)[0], ), 'r', encoding='utf-8') as types_file:
+        types = json.load(types_file)
+        for line in types:
+            Types.get_or_create(name=line['name'], icon=line['icon'])
 
     # import languages list
-    with open('%s/data/languages.json' % (os.path.split(__file__)[0], ), 'r') as f:
-        languages = json.load(f)
+    with open('%s/data/languages.json' % (os.path.split(__file__)[0], ), 'r', encoding='utf-8') as languages_file:
+        languages = json.load(languages_file)
         for language in languages:
             Languages.get_or_create(
                 name=language['name'],
                 code=language['code'])
 
     # import countries list
-    with open('%s/data/countries.json' % (os.path.split(__file__)[0], ), 'r') as f:
-        countries = json.load(f)
+    with open('%s/data/countries.json' % (os.path.split(__file__)[0], ), 'r', encoding='utf-8') as countries_file:
+        countries = json.load(countries_file)
         for country in countries:
             Countries.get_or_create(name=country['name'], code=country['code'])
 
     # import modules list
-    with open('%s/data/modules.json' % (os.path.split(__file__)[0], ), 'r') as f:
-        modules = json.load(f)
+    with open('%s/data/modules.json' % (os.path.split(__file__)[0], ), 'r', encoding='utf-8') as modules_file:
+        modules = json.load(modules_file)
         for module in modules:
             type = Types.get(Types.name == module['type'])
             Modules.get_or_create(type_id=type,
@@ -108,11 +108,11 @@ def make_tables():
 
 
 class JSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, UUID):
-            # if the obj is uuid, we simply return the value of string
-            return str(obj)
-        elif isinstance(obj, datetime.datetime):
-            # if the obj is datetime, we simply return the value of string
-            return str(obj)
-        return json.JSONEncoder.default(self, obj)
+    def default(self, o):
+        if isinstance(o, UUID):
+            # if the o is uuid, we simply return the value of string
+            return str(o)
+        if isinstance(o, datetime.datetime):
+            # if the o is datetime, we simply return the value of string
+            return str(o)
+        return json.JSONEncoder.default(self, o)
