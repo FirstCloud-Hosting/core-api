@@ -23,7 +23,6 @@ class CountriesListsAPI(Resource):
         # Get all countries
         query = database.Countries.select().order_by(database.Countries.name)
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
 

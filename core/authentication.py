@@ -81,8 +81,8 @@ class AuthenticateUserAPI(Resource):
                 # log activity
                 database.ActivityLogs.create(
                     activity="Autentication",
-                    result="%s : Authentication success" %
-                    args['email'])
+                    result="%s - %s : Authentication success" %
+                    args['email'], remote_ip)
 
                 return jsonify(
                     {
@@ -183,8 +183,6 @@ class AuthenticateAppAPI(Resource):
                         database.Users.organization_id == args['organizationKey'],
                         database.AppKeys.secretKey == args['secretKey']))
 
-            print(user[0].user.__dict__, flush=True)
-
             if user:
                 # create session
                 s = Serializer(
@@ -194,8 +192,8 @@ class AuthenticateAppAPI(Resource):
 
                 # log activity
                 database.ActivityLogs.create(
-                    activity="Autentication", result="%s - %s : Application authentication success" %
-                    (args['organizationKey'], args['secretKey']))
+                    activity="Autentication", result="%s - %s - %s : Application authentication success" %
+                    (args['organizationKey'], args['secretKey'], remote_ip))
 
                 return jsonify(
                     {

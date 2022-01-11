@@ -7,7 +7,7 @@ import json
 from playhouse.shortcuts import model_to_dict
 from peewee import DoesNotExist
 from flask_restful import Api, Resource, reqparse
-from flask_limiter.util import get_ipaddr
+from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
 from flask import Flask, make_response, jsonify
 from itsdangerous import (
@@ -20,7 +20,7 @@ import utils.configuration
 import utils.security
 import utils.modules
 import utils.emailer
-import utils.cacheMemcache
+import utils.cache_memcache
 import database
 
 # load configuration
@@ -28,7 +28,7 @@ config = utils.configuration.load()
 
 if (config['DEFAULT']['MEMCACHED']).lower() == "true":
     cacheEnable = True
-    cache = utils.cacheMemcache.Cache(
+    cache = utils.cache_memcache.Cache(
         True,
         config['MEMCACHED']['HOST'],
         config['MEMCACHED']['PORT'])
@@ -65,14 +65,14 @@ app.json_encoder = database.JSONEncoder
 
 api = Api(app)
 
-if (config['DEFAULT']['ENVIRONMENT']):
+if config['DEFAULT']['ENVIRONMENT']:
     environment = config['DEFAULT']['ENVIRONMENT']
 else:
     environment = "production"
 
 limiter = Limiter(
     app,
-    key_func=get_ipaddr,
+    key_func=get_remote_address,
     default_limits=["500 per hour"]
 )
 
@@ -96,4 +96,4 @@ def version():
 @app.errorhandler(404)
 def not_found(error):
     return make_response(
-        jsonify({'status': 100, 'message': 'API call not found'}), 404)
+        jsonify({'status': 100, 'message': 'API call not found', 'error': error}), 404)

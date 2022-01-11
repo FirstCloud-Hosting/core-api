@@ -22,7 +22,6 @@ class OrganizationsListsAPI(Resource):
         query = database.Organizations.select()
 
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
 

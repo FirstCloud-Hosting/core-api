@@ -52,7 +52,6 @@ class UsersListAPI(Resource):
                 database.Users.organization_id == user.organization_id))
 
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
     def post(self):
@@ -88,7 +87,7 @@ class UsersListAPI(Resource):
         if utils.security.validate_email(args['email']) != True:
             return {'status': 100, 'message': 'Invalid email address'}
 
-        if(user_id is not None):
+        if user_id is not None:
 
             # get permission
             query = (
@@ -148,8 +147,6 @@ class UsersListAPI(Resource):
                                             edition=1,
                                             deletion=1)
 
-            status = 0
-
         # generate validation key
         key = str(uuid4())
 
@@ -167,24 +164,24 @@ class UsersListAPI(Resource):
                                      language_id=language_id)
 
         if 'group_id' not in args:
-            emailer.sendConfirmSignUp(
+            emailer.send_confirm_signup(
                 'welcome@linufy.app',
                 args['email'],
                 'LinuFy - Welcome !',
                 key)
         else:
-            forgotPasswordKey = str(uuid4())
+            forgot_password_key = str(uuid4())
 
             query = database.Users.update(
-                forgotPasswordKey=forgotPasswordKey).where(
+                forgotPasswordKey=forgot_password_key).where(
                 database.Users.id == user.id)
             query.execute()
 
-            emailer.sendLostPassword(
+            emailer.send_lost_password(
                 'lost_password@linufy.app',
                 args['email'],
                 'FirstCloud-Hosting - Password Reset',
-                forgotPasswordKey)
+                forgot_password_key)
 
         return {'status': 200, 'message': 'User successfully created'}
 
@@ -256,7 +253,7 @@ class UserAPI(Resource):
 
         check_email_address = utils.security.validate_email(args['email'])
 
-        if(check_email_address != current_user_id and check_email_address == False):
+        if check_email_address != current_user_id and check_email_address == False:
             return {'status': 100, 'message': 'Invalid email address'}
 
         # current user
@@ -265,8 +262,8 @@ class UserAPI(Resource):
             # get current SQL user instance
             user = database.Users.get(database.Users.id == current_user_id)
 
-            if ('currentPassword' not in args or utils.cryptography.hash_password(
-                    args['currentPassword']) != user.password):
+            if 'currentPassword' not in args or utils.cryptography.hash_password(
+                    args['currentPassword']) != user.password:
                 return {
                     'status': 100,
                     'message': 'Current password is invalid'}
@@ -303,7 +300,7 @@ class UserAPI(Resource):
             if 'groupId' not in args:
                 return {'status': 100, 'message': 'groupId not set'}
 
-            if(current_user_id == user_id):
+            if current_user_id == user_id:
                 return {
                     'status': 100,
                     'message': 'Unable to change group of current user'}
@@ -328,7 +325,7 @@ class UserAPI(Resource):
         # get current user ID
         current_user_id = utils.security.get_user_id(args['token'])
 
-        if(current_user_id == user_id):
+        if current_user_id == user_id:
             return {'status': 100, 'message': 'Cannot delete current user'}
 
         # get current SQL user instance
@@ -383,7 +380,7 @@ class UserMfaAPI(Resource):
         # get current user ID
         user_id = utils.security.get_user_id(args['token'])
 
-        if(args['mfa'] in ['on', 'off']):
+        if args['mfa'] in ['on', 'off']:
 
             # set MFA configuration for current user
             query = database.Users.update(
@@ -446,8 +443,8 @@ class UserPasswordAPI(Resource):
             # get current SQL user instance
             user = database.Users.get(database.Users.id == current_user_id)
 
-            if ('currentPassword' not in args or utils.cryptography.hash_password(
-                    args['currentPassword']) != user.password):
+            if 'currentPassword' not in args or utils.cryptography.hash_password(
+                    args['currentPassword']) != user.password:
                 return {
                     'status': 100,
                     'message': 'Current password is invalid'}
@@ -525,15 +522,15 @@ class UserLostPasswordAPI(Resource):
         except BaseException:
             return {'status': 100, 'message': 'Invalid email address'}
 
-        if(user):
+        if user:
 
-            if(user.status != 1):
+            if user.status != 1:
                 return {'status': 100, 'message': 'Account not active'}
 
-            forgotPasswordKey = str(uuid4())
+            forgot_password_key = str(uuid4())
 
             query = database.Users.update(
-                forgotPasswordKey=forgotPasswordKey).where(
+                forgotPasswordKey=forgot_password_key).where(
                 database.Users.id == user.id)
             query.execute()
 
@@ -541,7 +538,7 @@ class UserLostPasswordAPI(Resource):
                 'lost_password@linufy.app',
                 args['email'],
                 'FirstCloud-Hosting - Password Reset',
-                forgotPasswordKey)
+                forgot_password_key)
 
             return {'status': 200, 'data': 'Successfully sent'}
 
@@ -643,7 +640,7 @@ class UserStatusAPI(Resource):
         # get current user ID
         current_user_id = utils.security.get_user_id(args['token'])
 
-        if(user_id == current_user_id):
+        if user_id == current_user_id:
             return {'status': 100, 'message': 'Unable to edit current user'}
 
         if not args['status'] in [0, 1]:
@@ -653,10 +650,6 @@ class UserStatusAPI(Resource):
         user = database.Users.get(database.Users.id == current_user_id)
 
         try:
-            edited_user = database.Users.get(
-                database.Users.id == user_id,
-                database.Users.organization_id == user.organization_id)
-
             query = database.Users.update(
                 status=args['status']).where(
                 database.Users.id == user_id)

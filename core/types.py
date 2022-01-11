@@ -20,7 +20,6 @@ class ModulesTypesListAPI(Resource):
         # Get all types
         query = database.Types.select().order_by(database.Types.name)
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
 

@@ -40,7 +40,6 @@ class AppKeysListsAPI(Resource):
                  .where(database.AppKeys.user_id == user_id))
 
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
     @utils.security.authentication_required
@@ -85,11 +84,11 @@ class AppKeysAPI(Resource):
         super().__init__()
 
     @utils.security.authentication_required
-    def get(self, appKey_id):
+    def get(self, app_key_id):
         """Get selected app key
 
         Args:
-            appKey_id (str): app key ID (UUID format)
+            app_key_id (str): app key ID (UUID format)
 
         Returns:
             dict: informations of selected app key
@@ -100,16 +99,16 @@ class AppKeysAPI(Resource):
         user_id = utils.security.get_user_id(args['token'])
 
         query = database.AppKeys.get(
-            database.AppKeys.id == appKey_id,
+            database.AppKeys.id == app_key_id,
             database.AppKeys.user_id == user_id)
         return jsonify({'status': 200, 'data': model_to_dict(query)})
 
     @utils.security.authentication_required
-    def put(self, appKey_id):
+    def put(self, app_key_id):
         """Edit selected app key
 
         Args:
-            appKey_id (str): app key ID (UUID format)
+            app_key_id (str): app key ID (UUID format)
         """
         args = self.reqparse.parse_args()
 
@@ -119,17 +118,17 @@ class AppKeysAPI(Resource):
         # update group
         query = database.AppKeys.update(
             description=args['description']).where(
-            database.AppKeys.id == appKey_id,
+            database.AppKeys.id == app_key_id,
             database.AppKeys.user_id == user_id)
         query.execute()
         return {'status': 200, 'message': 'Application Key successfully edited'}
 
     @utils.security.authentication_required
-    def delete(self, appKey_id):
+    def delete(self, app_key_id):
         """Delete selected app key
 
         Args:
-            appKey_id (str): app key ID (UUID format)
+            app_key_id (str): app key ID (UUID format)
         """
         args = self.reqparse.parse_args()
 
@@ -138,7 +137,7 @@ class AppKeysAPI(Resource):
 
         # delete group
         query = database.AppKeys.delete().where(
-            database.AppKeys.id == appKey_id,
+            database.AppKeys.id == app_key_id,
             database.AppKeys.user_id == user_id)
         query.execute()
         return {
@@ -147,4 +146,4 @@ class AppKeysAPI(Resource):
 
 
 api.add_resource(AppKeysListsAPI, '/1.0/appKeys')
-api.add_resource(AppKeysAPI, '/1.0/appKeys/<string:appKey_id>')
+api.add_resource(AppKeysAPI, '/1.0/appKeys/<string:app_key_id>')

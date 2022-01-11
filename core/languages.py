@@ -21,7 +21,6 @@ class LanguagesListsAPI(Resource):
         # Get all countries
         query = database.Languages.select().order_by(database.Languages.name)
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
     def post(self):
@@ -35,7 +34,8 @@ class LanguagesListsAPI(Resource):
             module = database.Languages.get(
                 database.Languages.code == args['code'])
 
-            return {'status': 100, 'message': 'This language already exist'}
+            if module:
+                return {'status': 100, 'message': 'This language already exist'}
 
         except DoesNotExist:
             language = database.Languages.create(
@@ -93,8 +93,6 @@ class LanguagesAPI(Resource):
     @utils.security.authentication_required
     @utils.security.allowed_permissions('core/languages')
     def delete(self, language_id):
-        args = self.reqparse.parse_args()
-
         # delete module
         query = database.Languages.delete().where(database.Languages.id == language_id)
         query.execute()

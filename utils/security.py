@@ -26,32 +26,30 @@ def validate_password(organization_id, password):
 
         uppercase = 'ABCDEFGHIJKLMNOPQRSTUVXYZ'
         lowercase = 'abcdefghijklmnopqrstuvxyz'
-        specialChars = '[@_!#$%^&*()<>?/\\|}{~:]'
+        special_chars = '[@_!#$%^&*()<>?/\\|}{~:]'
         numbers = '0123456789'
 
         if len(password) < 12:
             return False
 
-        elif not len([x for x in password if x in uppercase]) >= 1:
+        if not len([x for x in password if x in uppercase]) >= 1:
             return False
 
-        elif not len([x for x in password if x in lowercase]) >= 1:
+        if not len([x for x in password if x in lowercase]) >= 1:
             return False
 
-        elif not len([x for x in password if x in specialChars]) >= 1:
+        if not len([x for x in password if x in special_chars]) >= 1:
             return False
 
-        elif not len([x for x in password if x in numbers]) >= 1:
-            return False
-
-        return True
-
-    else:
-
-        if len(password) < 8:
+        if not len([x for x in password if x in numbers]) >= 1:
             return False
 
         return True
+
+    if len(password) < 8:
+        return False
+
+    return True
 
 
 def validate_email(email):
@@ -63,10 +61,10 @@ def validate_email(email):
         return False
 
     # check if domain is in blacklist
-    with open('%s/../files/domains.json' % os.path.split(__file__)[0], 'r') as f:
-        bannedEmails = json.load(f)
+    with open('%s/../files/domains.json' % os.path.split(__file__)[0], 'r') as domains_file:
+        banned_emails = json.load(domains_file)
         domain = email.split('@')[1].lower()
-        if domain in bannedEmails:
+        if domain in banned_emails:
             return False
 
     try:
@@ -116,8 +114,6 @@ def authentication_required(func):
                     400,
                 )
                 return response
-            else:
-                data = serializer.loads(parameters['token'])
 
         # valid token, but expired
         except SignatureExpired:
@@ -154,7 +150,7 @@ def allowed_permissions(module):
 
             parameters = class_handler.reqparse.parse_args()
 
-            userId = get_user_id(parameters['token'])
+            user_id = get_user_id(parameters['token'])
 
             if isinstance(module, str):
 
@@ -164,7 +160,7 @@ def allowed_permissions(module):
                         database.Permissions) .join(
                         database.Groups) .join(
                         database.Users) .where(
-                        database.Users.id == userId,
+                        database.Users.id == user_id,
                         database.Modules.page == module))
 
                 if len(query) != 0:
@@ -218,7 +214,7 @@ def allowed_permissions(module):
                             database.Permissions) .join(
                             database.Groups) .join(
                             database.Users) .where(
-                            database.Users.id == userId,
+                            database.Users.id == user_id,
                             database.Modules.page == m))
 
                     if len(query) != 0:

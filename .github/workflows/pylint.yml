@@ -21,4 +21,4 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint --disable=W0611,R0801 $(find . -name "*.py" | xargs)
+        pylint --disable=W0611,R0801,W0614 $(find . -name "*.py" | xargs)

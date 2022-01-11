@@ -21,7 +21,7 @@ def hash_password(password):
 class AESCipher(object):
 
     def __init__(self, key):
-        self.bs = 64
+        self.block_size = 64
         self.key = hashlib.sha256(key.encode()).digest()
 
     def encrypt(self, raw):
@@ -38,8 +38,8 @@ class AESCipher(object):
             enc[AES.block_size:])).decode('utf-8')
 
     def _pad(self, s):
-        return s + (self.bs - len(s) % self.bs) * \
-            chr(self.bs - len(s) % self.bs)
+        return s + (self.block_size - len(s) % self.block_size) * \
+            chr(self.block_size - len(s) % self.block_size)
 
     @staticmethod
     def _unpad(s):

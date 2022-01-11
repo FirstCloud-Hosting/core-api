@@ -46,7 +46,7 @@ class emailer():
             template_file_content = template_file.read()
         return Template(template_file_content)
 
-    def sendLostPassword(
+    def send_lost_password(
             self,
             src_address,
             dst_address,
@@ -78,7 +78,7 @@ class emailer():
         self.disconnect()
         del msg
 
-    def sendConfirmSignUp(
+    def send_confirm_signup(
             self,
             src_address,
             dst_address,
@@ -112,7 +112,7 @@ class emailer():
         self.disconnect()
         del msg
 
-    def sendNewPassword(
+    def send_new_password(
             self,
             src_address,
             dst_address,
@@ -141,44 +141,6 @@ class emailer():
         Sincerly,
         The FirstCloud-Hosting Team
         """ % (username, newPassword)
-        msg.attach(MIMEText(plain, 'plain'))
-        message = msg.as_string()
-        self.connect()
-        self.connection.sendmail(src_address, dst_address, message)
-        self.disconnect()
-        del msg
-
-    def sendWebinarSignUp(
-            self,
-            src_address,
-            dst_address,
-            title,
-            firstname,
-            link,
-            date,
-            time):
-        msg = MIMEMultipart()
-        msg['From'] = src_address
-        msg['To'] = dst_address
-        msg['Subject'] = title
-        msg['Date'] = formatdate(localtime=1)
-        msg['Message-ID'] = make_msgid()
-        message_template = self.read_template('webinarSignUp')
-        message = message_template.substitute(
-            TITLE=title,
-            FIRSTNAME=firstname,
-            EMAIL=dst_address,
-            LINK=link,
-            DATE=date,
-            TIME=time)
-        plain = """Dear %s,
-
-        You want to register to our webinar for LinuFy. Please use this link : %s the %s at %s
-        If you have any questions, please don't hesitate to reach use a support@linufy.app
-        Please do not reply to this email.
-        Sincerly,
-        The FirstCloud-Hosting Team
-        """ % (firstname, link, date, time)
         msg.attach(MIMEText(plain, 'plain'))
         message = msg.as_string()
         self.connect()

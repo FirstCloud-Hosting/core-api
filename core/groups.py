@@ -34,7 +34,6 @@ class GroupsListsAPI(Resource):
                 database.Groups.name))
 
         query = [model_to_dict(item) for item in query]
-        data = json.dumps(query, cls=database.JSONEncoder)
         return jsonify({'status': 200, 'data': query})
 
     @utils.security.authentication_required
