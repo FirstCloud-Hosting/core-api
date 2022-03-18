@@ -116,3 +116,12 @@ class JSONEncoder(json.JSONEncoder):
             # if the o is datetime, we simply return the value of string
             return str(o)
         return json.JSONEncoder.default(self, o)
+
+def connect():
+    return DB.connect()
+
+def is_closed():
+    return DB.is_closed()
+
+def close():
+    return DB.close()
