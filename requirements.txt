@@ -5,6 +5,7 @@ email_validator
 itsdangerous
 configparser
 python-memcached
+redis
 peewee
 pymysql
 cryptography
