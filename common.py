@@ -21,12 +21,19 @@ import utils.security
 import utils.modules
 import utils.emailer
 import utils.cache_memcache
+import utils.cache_redis
 import database
 
 # load configuration
 config = utils.configuration.load()
 
-if (config['DEFAULT']['MEMCACHED']).lower() == "true":
+if (config['DEFAULT']['REDIS']).lower() == "true":
+    CACHE_ENABLE = True
+    cache = utils.cache_redis.Cache(
+        True,
+        config['REDIS']['HOST'],
+        config['REDIS']['PORT'])
+elif (config['DEFAULT']['MEMCACHED']).lower() == "true":
     CACHE_ENABLE = True
     cache = utils.cache_memcache.Cache(
         True,
