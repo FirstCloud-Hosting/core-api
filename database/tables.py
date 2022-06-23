@@ -63,7 +63,7 @@ class Users(BaseModel):
     id = UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     organization = ForeignKeyField(Organizations)
     group = ForeignKeyField(Groups)
-    password = CharField(max_length=64)
+    password = CharField(max_length=512)
     status = IntegerField(default=0)
     confirmKey = UUIDField(default=uuid.uuid4)
     forgotPasswordKey = UUIDField(null=True)
@@ -74,9 +74,9 @@ class Users(BaseModel):
     created = DateTimeField(constraints=[SQL('DEFAULT CURRENT_TIMESTAMP')])
     edited = DateTimeField(null=True)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.edited = datetime.datetime.now()
-        return super().__init__()
+        return super(Users, self).save(*args, **kwargs)
 
 
 class AppKeys(BaseModel):

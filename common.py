@@ -11,7 +11,6 @@ from flask_limiter.util import get_remote_address
 from flask_limiter import Limiter
 from flask import Flask, make_response, jsonify
 from itsdangerous import (
-    TimedJSONWebSignatureSerializer as Serializer,
     BadSignature,
     SignatureExpired)
 

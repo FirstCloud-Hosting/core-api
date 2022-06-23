@@ -3,7 +3,7 @@
 
 import base64
 import hashlib
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher, exceptions
 from Crypto import Random
 from Crypto.Cipher import AES
 
@@ -17,9 +17,20 @@ def hash_password(password):
     salt = (configuration['DEFAULT']['SECRET_KEY']).encode('utf-8')
 
     ph = PasswordHasher()
-    argon_hash = ph.hash(password + salt)
+    argon_hash = ph.hash(password + salt).encode('utf-8')
 
-    return hashlib.sha256(argon_hash).hexdigest()
+    return argon_hash
+
+
+def verify_password(hash, password):
+    password = password.encode('utf-8')
+    configuration = utils.configuration.load()
+    salt = (configuration['DEFAULT']['SECRET_KEY']).encode('utf-8')
+    try:
+        ph = PasswordHasher()
+        return ph.verify(hash, password + salt)
+    except exceptions.VerifyMismatchError:
+        return False
 
 
 class AESCipher():

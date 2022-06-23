@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """Authentication module allows to authenticate users and applications to API
 """
-
+from itsdangerous import (
+    TimedJSONWebSignatureSerializer as Serializer)
 from common import *
 
 # Authentication for user
@@ -53,9 +54,6 @@ class AuthenticateUserAPI(Resource):
         else:
             remote_ip = utils.security.get_ip()
 
-        # get hash of password
-        hash_passwd = utils.cryptography.hash_password(args['password'])
-
         try:
             # authentication by email
             if 'email' not in args or args['email'] is None:
@@ -68,31 +66,31 @@ class AuthenticateUserAPI(Resource):
                 return response
 
             user = database.Users.get(
-                database.Users.email == args['email'],
-                database.Users.password == hash_passwd)
+                database.Users.email == args['email'])
 
             if user:
-                # create session
-                s = Serializer(
-                    app.config['SECRET_KEY'], expires_in=int(
-                        config['DEFAULT']['SESSION_LIFETIME']))
-                token = s.dumps({'id': str(user.id)}).decode()
+                if utils.cryptography.verify_password(user.password, args['password']):
+                    # create session
+                    s = Serializer(
+                        app.config['SECRET_KEY'], expires_in=int(
+                            config['DEFAULT']['SESSION_LIFETIME']))
+                    token = s.dumps({'id': str(user.id)}).decode()
 
-                # log activity
-                database.ActivityLogs.create(
-                    activity="Autentication",
-                    result="%s - %s : Authentication success" %
-                    (args['email'], remote_ip) )
+                    # log activity
+                    database.ActivityLogs.create(
+                        activity="Autentication",
+                        result="%s - %s : Authentication success" %
+                        (args['email'], remote_ip) )
 
-                return jsonify(
-                    {
-                        'status': 200,
-                        'data': {
-                            'token': token,
-                            'user_id': user.id,
-                            'group_id': user.group_id,
-                            'expiration': int(
-                                config['DEFAULT']['SESSION_LIFETIME'])}})
+                    return jsonify(
+                        {
+                            'status': 200,
+                            'data': {
+                                'token': token,
+                                'user_id': user.id,
+                                'group_id': user.group_id,
+                                'expiration': int(
+                                    config['DEFAULT']['SESSION_LIFETIME'])}})
 
             response = make_response(
                 jsonify(

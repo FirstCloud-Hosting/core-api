@@ -262,8 +262,8 @@ class UserAPI(Resource):
             # get current SQL user instance
             user = database.Users.get(database.Users.id == current_user_id)
 
-            if 'currentPassword' not in args or utils.cryptography.hash_password(
-                    args['currentPassword']) != user.password:
+            if 'currentPassword' not in args or not utils.cryptography.verify_password(
+                    user.password, args['currentPassword']):
                 return {
                     'status': 100,
                     'message': 'Current password is invalid'}
@@ -440,8 +440,8 @@ class UserPasswordAPI(Resource):
             # get current SQL user instance
             user = database.Users.get(database.Users.id == current_user_id)
 
-            if 'currentPassword' not in args or utils.cryptography.hash_password(
-                    args['currentPassword']) != user.password:
+            if 'currentPassword' not in args or not utils.cryptography.hash_password(
+                    user.password, args['currentPassword']):
                 return {
                     'status': 100,
                     'message': 'Current password is invalid'}
